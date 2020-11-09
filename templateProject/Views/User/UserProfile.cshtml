@@ -1,0 +1,68 @@
+﻿@using templateProject.Model
+@using templateProject.Helper
+@{
+    ViewBag.Title = "Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    UserInfoModel userInfo = (UserInfoModel)GeneralFunctions.GetSession(Configs.session);
+}
+<div class="page-inner">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card card-with-nav">
+                <div class="card-header">
+                    <div class="row row-nav-line">
+                        <ul class="nav nav-tabs nav-line nav-color-secondary w-100 pl-3" role="tablist">
+                            <li class="nav-item submenu"> <a class="nav-link active show" data-toggle="tab" href="#Profile" role="tab" aria-selected="false">Profile</a> </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="form-group form-group-default">
+                                <label>Name</label>
+                                <span>@userInfo.OfficialName</span>
+                                
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group form-group-default">
+                                <label>Email</label>
+                                <span>@userInfo.Email</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3 mb-1">
+                        <div class="col-md-12">
+                            <div class="form-group form-group-default">
+                                <label>About Me</label>
+                                <textarea class="form-control" name="about" placeholder="About Me" rows="3">A man who hates loneliness</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-profile">
+                <div class="card-header" style="background: url('@Url.Content("~/Content/img/bg-profile.jpg")') center">
+                    <div class="profile-picture">
+                        <div class="avatar avatar-xl">
+                            <img src="@Url.Content("~/Content/img/user.png")" alt="..." class="avatar-img rounded-circle">
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="user-profile text-center">
+                        <div class="name">@userInfo.UserName</div>
+                        <div class="job">@userInfo.GroupUser.FirstOrDefault().GroupUserName</div>
+                        <div class="job">@userInfo.Email</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,278 @@
+﻿@using templateProject.Helper
+@using templateProject.Model
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>@ViewBag.Title</title>
+    <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport">
+    <link rel="icon" href="@Url.Content("~/Content/img/icon.png")" type="image/x-icon">
+
+    <!-- Fonts and icons -->
+    @Scripts.Render("~/Script/Font")
+    <script>
+        WebFont.load({
+            google: { "families": ["Lato:300,400,700,900"] },
+            custom: { "families": ["Flaticon", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands", "simple-line-icons"], urls: ['@Url.Content("~/Content/css/fonts.min.css")'] },
+            active: function () {
+                sessionStorage.fonts = true;
+            }
+        });
+    </script>
+
+    <!-- CSS Files -->
+    @Styles.Render("~/Themes/Core")
+
+
+    @Styles.Render("~/Themes/Custom")
+    @{
+        UserInfoModel userInfo = (UserInfoModel)GeneralFunctions.GetSession(Configs.session);
+    }
+
+    @Scripts.Render("~/Script/jquery")
+    @Scripts.Render("~/Script/Core")
+    @RenderSection("ScriptInHeader", required: false)
+</head>
+<body data-background-color="bg1" id="body">
+    <input type="hidden" value="@userInfo.InfoAccess.AllowCreate.ToString()" name="AuthAllowCreate" id="AuthAllowCreate" />
+    <input type="hidden" value="@userInfo.InfoAccess.AllowRead.ToString()" name="AuthAllowRead" id="AuthAllowRead" />
+    <input type="hidden" value="@userInfo.InfoAccess.AllowUpdate.ToString()" name="AuthAllowUpdate" id="AuthAllowUpdate" />
+    <input type="hidden" value="@userInfo.InfoAccess.AllowDelete.ToString()" name="AuthAllowDelete" id="AuthAllowDelete" />
+    <div class="wrapper">
+        <div class="main-header">
+            <!-- Logo Header -->
+            <div class="logo-header" id="logo-header" data-background-color="dark">
+
+                <a href="#" class="logo">
+                    @*<img src="" alt="navbar brand" class="navbar-brand">*@
+                    Application
+                </a>
+                <button class="navbar-toggler sidenav-toggler ml-auto" type="button" data-toggle="collapse" data-target="collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon">
+                        <i class="icon-menu"></i>
+                    </span>
+                </button>
+                <button class="topbar-toggler more"><i class="icon-options-vertical"></i></button>
+                <div class="nav-toggle">
+                    <button class="btn btn-toggle toggle-sidebar">
+                        <i class="icon-menu"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- End Logo Header -->
+            <!-- Navbar Header -->
+            <nav id="navbar-header" class="navbar navbar-header navbar-expand-lg" data-background-color="dark">
+
+                <div class="container-fluid">
+                    <ul class="navbar-nav topbar-nav ml-md-auto align-items-center">
+                        <li class="nav-item dropdown hidden-caret">
+                            <a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="#" aria-expanded="false">
+                                <div class="avatar-sm">
+                                    <img src="@Url.Content("~/Content/img/user.png")" alt="..." class="avatar-img rounded-circle">
+                                </div>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user animated fadeIn">
+                                <div class="dropdown-user-scroll scrollbar-outer">
+                                    <li>
+                                        <div class="user-box">
+                                            <div class="avatar-lg"><img src="@Url.Content("~/Content/img/user.png")" alt="image profile" class="avatar-img rounded"></div>
+                                            <div class="u-text">
+                                                <h4>@userInfo.OfficialName</h4>
+                                                <p class="text-muted">@userInfo.Email</p>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="@Url.Content("~/User/UserProfile")">My Profile</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="@Url.Content("~/Account/Logout")">Logout</a>
+                                    </li>
+                                </div>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <!-- End Navbar -->
+        </div>
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar sidebar-style-2" data-background-color="dark2">
+            <div class="sidebar-wrapper scrollbar scrollbar-inner">
+                <div class="sidebar-content">
+                    <div class="user">
+                        <div class="avatar-sm float-left mr-2">
+                            <img src="@Url.Content("~/Content/img/user.png")" alt="..." class="avatar-img rounded-circle">
+                        </div>
+                        <div class="info">
+                            <a data-toggle="collapse" href="#collapseExample" aria-expanded="true">
+                                <span>
+                                    @userInfo.OfficialName
+                                    <span class="user-level">@userInfo.GroupUser.FirstOrDefault().GroupUserName</span>
+                                    <span class="caret"></span>
+                                </span>
+                            </a>
+                            <div class="clearfix"></div>
+                            <div class="collapse in" id="collapseExample">
+                                <ul class="nav">
+                                    <li>
+                                        <a href="@Url.Content("~/User/UserProfile")">
+                                            <span class="link-collapse">My Profile</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="nav nav-primary">
+                        @{
+                        List<MMenuModel> menu = GeneralFunctions.GetMenuByListGroup(userInfo.UserID);
+                        string output = "";
+                        int inc = 1;
+                        string currentUrl = HttpContext.Current.Request.Url.AbsolutePath;
+                        foreach (MMenuModel parent in menu.Where(w => w.ParentMenuID == 0).OrderBy(o => o.OrderPage))
+                        {
+                            IEnumerable<MMenuModel> childMenu = menu.Where(w => w.ParentMenuID == parent.MenuID).OrderBy(o => o.OrderPage);
+
+                            if (childMenu.Any())
+                            {
+                                output += @"
+                                <li class='nav-item'>
+                                    <a data-toggle='collapse' href='#menu-" + parent.Modul + @"' class='collapsed' aria-expanded='false'>
+                                        <i class='fas " + parent.IconFA + @"'></i>
+                                        <p>" + parent.MenuName + @"</p>
+                                        <span class='caret'></span>
+                                    </a>
+                                    <div class='collapse' id='menu-" + parent.Modul + @"'>
+                                        <ul class='nav nav-collapse'>";
+                                            foreach (MMenuModel child in childMenu)
+                                            {
+                                                output += @"
+                                                <li>
+                                                    <a href='"+Url.Content("~"+child.PageUrl)+@"'>
+                                                        <span class='sub-item'>"+child.MenuName+@"</span>
+                                                    </a>
+                                                </li>";
+                                            }
+                                output += @"
+                                        </ul>
+                                    </div>
+                                </li>";
+                            }
+                            else
+                            {
+                                output += @"
+                                    <li class='nav-item'>
+							            <a href='"+Url.Content("~"+parent.PageUrl)+@"'>
+								            <i class='fas "+parent.IconFA+@"'></i>
+								            <p>"+parent.MenuName+@"</p>
+							            </a>
+						            </li>";
+                            }
+                        }
+                        }
+                        @Html.Raw(HttpUtility.HtmlDecode(output))
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- End Sidebar -->
+        <div class="main-panel">
+            <div class="content">
+                @RenderBody()
+            </div>
+            <footer class="footer">
+                <div class="container-fluid">
+                    <nav class="pull-left">
+                        <ul class="nav">
+                        </ul>
+                    </nav>
+                    <div class="copyright ml-auto">
+                        &copy; 2019 Indofood
+                    </div>
+                </div>
+            </footer>
+        </div>
+
+        <!-- Custom template | don't include it in your project! -->
+        <div class="custom-template">
+            <div class="title">Settings</div>
+            <div class="custom-content">
+                <div class="switcher">
+                    <div class="switch-block">
+                        <h4>Logo Header</h4>
+                        <div class="btnSwitch">
+                            <button type="button" class="changeLogoHeaderColor" data-color="dark"></button>
+                            <button type="button" class="changeLogoHeaderColor" data-color="blue"></button>
+                            <button type="button" class="changeLogoHeaderColor" data-color="purple"></button>
+                            <button type="button" class="changeLogoHeaderColor" data-color="light-blue"></button>
+                            <button type="button" class="changeLogoHeaderColor" data-color="green"></button>
+                            <button type="button" class="changeLogoHeaderColor" data-color="orange"></button>
+                            <button type="button" class="changeLogoHeaderColor" data-color="red"></button>
+                            <button type="button" class="changeLogoHeaderColor" data-color="white"></button>
+                            <br />
+                            <button type="button" class="selected changeLogoHeaderColor" data-color="dark2"></button>
+                            <button type="button" class="changeLogoHeaderColor" data-color="blue2"></button>
+                            <button type="button" class="changeLogoHeaderColor" data-color="purple2"></button>
+                            <button type="button" class="changeLogoHeaderColor" data-color="light-blue2"></button>
+                            <button type="button" class="changeLogoHeaderColor" data-color="green2"></button>
+                            <button type="button" class="changeLogoHeaderColor" data-color="orange2"></button>
+                            <button type="button" class="changeLogoHeaderColor" data-color="red2"></button>
+                        </div>
+                    </div>
+                    <div class="switch-block">
+                        <h4>Navbar Header</h4>
+                        <div class="btnSwitch">
+                            <button type="button" class="changeTopBarColor" data-color="dark"></button>
+                            <button type="button" class="changeTopBarColor" data-color="blue"></button>
+                            <button type="button" class="changeTopBarColor" data-color="purple"></button>
+                            <button type="button" class="changeTopBarColor" data-color="light-blue"></button>
+                            <button type="button" class="changeTopBarColor" data-color="green"></button>
+                            <button type="button" class="changeTopBarColor" data-color="orange"></button>
+                            <button type="button" class="changeTopBarColor" data-color="red"></button>
+                            <button type="button" class="changeTopBarColor" data-color="white"></button>
+                            <br />
+                            <button type="button" class="changeTopBarColor" data-color="dark2"></button>
+                            <button type="button" class="changeTopBarColor" data-color="blue2"></button>
+                            <button type="button" class="changeTopBarColor" data-color="purple2"></button>
+                            <button type="button" class="changeTopBarColor" data-color="light-blue2"></button>
+                            <button type="button" class="changeTopBarColor" data-color="green2"></button>
+                            <button type="button" class="changeTopBarColor" data-color="orange2"></button>
+                            <button type="button" class="changeTopBarColor" data-color="red2"></button>
+                        </div>
+                    </div>
+                    <div class="switch-block">
+                        <h4>Sidebar</h4>
+                        <div class="btnSwitch">
+                            <button type="button" class="changeSideBarColor" data-color="white"></button>
+                            <button type="button" class="changeSideBarColor" data-color="dark"></button>
+                            <button type="button" class="changeSideBarColor" data-color="dark2"></button>
+                        </div>
+                    </div>
+                    <div class="switch-block">
+                        <h4>Background</h4>
+                        <div class="btnSwitch">
+                            <button type="button" class="changeBackgroundColor" data-color="bg2"></button>
+                            <button type="button" class="changeBackgroundColor selected" data-color="bg1"></button>
+                            <button type="button" class="changeBackgroundColor" data-color="bg3"></button>
+                            <button type="button" class="changeBackgroundColor" data-color="dark"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="custom-toggle" id="test">
+                <i class="flaticon-settings"></i>
+            </div>
+        </div>
+        <!-- End Custom template -->
+    </div>
+
+    <div id="loading">
+        <div class="k-loading-loader preloader pl-size-xl">
+            <img src="@Url.Content("~/Content/img/Loading.gif")" style="width:100px" />
+        </div>
+    </div>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

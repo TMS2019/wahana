@@ -1,0 +1,173 @@
+﻿@model templateProject.Model.MGroupUserModel
+@using templateProject.Model
+@using templateProject.Helper
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Group User";
+}
+
+
+@section ScriptInHeader{
+    @Scripts.Render("~/Script/DataTable")
+    @Scripts.Render("~/Script/FormUnobtrusive")
+    <style>
+        #Grid td {
+            white-space: nowrap;
+        }
+    </style>
+}
+
+<div class="panel-header">
+    <div class="page-inner border-bottom py-5">
+        <div class="d-flex align-items-left flex-column flex-md-row">
+            <h5 class="pb-2 fw-bold"><i class="fas fa-user"></i> Master Group User</h5>
+            <div class="ml-md-auto py-2 py-md-0">
+                <button class="btn btn-primary btn-round btn-add" id="BtnAdd">Tambah Group User</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-inner mt--5">
+    <div class="row mt--2">
+        <div class="col-md-12">
+            <div class="card full-height">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table id="Grid" class="table table-responsive table-striped table-head-bg-info" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>@Html.DisplayNameFor(f => f.GroupCode)</th>
+                                        <th>@Html.DisplayNameFor(f => f.GroupUserName)</th>
+                                        <th>@Html.DisplayNameFor(f => f.IsSuperAdmin)</th>
+                                    </tr>
+                                </thead>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="ModalManage" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content" id="ModalContentManage">
+
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        var ModalManage = "#ModalManage";
+        var ModalContentManage = "#ModalContentManage";
+        var Grid = "#Grid";
+        var FormSearch = "#FormSearch";
+        var BtnAdd = "#BtnAdd";
+
+        var dataTable = $(Grid).DataTable({
+                "processing": true,
+                "serverSide": false,
+                "pageLength": '@Configs.PerPage',
+                "ajax": {
+                    "url": "@Url.Content("~/GroupUser/GridRead")"
+                },
+                "columns": [
+                    {
+                        "data": null,
+                        render: function (data, type, row) {
+                            return '<button type="button" mode="edit" class="btn btn-icon btn-link btn-edit" data-target="' + ModalManage + '"><i class="fa fa-pencil-alt"></i></button> <button type="button" class="btn btn-icon btn-link btn-danger btn-delete" mode="delete"><i class="fa fa-trash-alt"></i></button>';
+                        },
+                        "orderable": false,
+                        "width": "85px"
+                    },
+                    { "data": "GroupCode" },
+                    { "data": "GroupUserName" },
+                    { "data": "IsSuperAdmin" }
+                ],
+                "order": [[1, "asc"]],
+                "createdRow": function (row, data, index) {
+                    if ($("#AuthAllowDelete").val() == "False") {
+                        $(row).find('.btn-delete').remove();
+                    }
+
+                    if ($("#AuthAllowUpdate").val() == "False") {
+                        $(row).find('.btn-edit').remove();
+                    }
+                }
+        });
+
+        $(document).ready(function () {
+            if ($("#AuthAllowCreate").val() == "False") {
+                $(".btn-add").remove()
+            }
+
+            $(BtnAdd).on('click', function () {
+                toggleLoading();
+                $(ModalContentManage).html("");
+                $(ModalContentManage).load('@Url.Content("~/GroupUser/Manage?")' + 'id=0'
+                , function (response, status, xhr) {
+                    toggleLoading();
+                    if (status == "error") {
+                        showNotification("danger", "Failed load page", xhr.status + ' ' + xhr.statusText)
+                    } else {
+                        $(ModalManage).modal('show');
+
+                    }
+                });
+            })
+
+            $(Grid + ' tbody').on('click', 'button', function () {
+                var data = dataTable.row($(this).parents('tr')).data();
+                if ($(this).attr("mode") == "edit") {
+                    toggleLoading();
+                    $(ModalContentManage).html("");
+                    $(ModalContentManage).load('@Url.Content("~/GroupUser/Manage?")' + 'id=' + data.GroupUserID
+                    , function (response, status, xhr) {
+                        toggleLoading();
+                        if (status == "error") {
+                            showNotification("danger", "Failed load page", xhr.status + ' ' + xhr.statusText)
+                        } else {
+                            $(ModalManage).modal('show');
+                        }
+                    });
+
+                } else {
+                    if (confirm("Are you Sure")) {
+                        toggleLoading();
+                        $.ajax({
+                            url: '@Url.Content("~/GroupUser/Delete")',
+                            type: 'POST',
+                            dataType: 'json',
+                            contentType: "application/json",
+                            data: JSON.stringify({ id: data.GroupUserID }),
+                            error: function (er) {
+                                showNotification("danger", "Failed", er.textStatus)
+                                toggleLoading();
+                            },
+                            success: function (data) {
+                                if (data.Error.length > 0) {
+                                    AjaxForm_showNotification(data.Error);
+                                } else {
+                                    showNotification("success", "Success", "Data telah dihapus")
+                                    dataTable.ajax.reload();
+                                }
+                                toggleLoading();
+                            }
+                        });
+                    }
+                }
+            });
+
+            $(FormSearch).submit(function (event) {
+                dataTable.draw();
+                return false;
+            });
+        });
+    </script>
+}

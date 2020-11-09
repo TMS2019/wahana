@@ -1,0 +1,144 @@
+﻿@model templateProject.Model.MGroupUserMenuModel
+@using templateProject.Model
+@{
+    Layout = null;
+}
+
+@if (Model.GroupUserMenuID == -1)
+{
+    <div class="modal-header">
+        <h5 class="modal-title">Access Menu</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body text-center" style="color: #ccc; ">
+        Data tidak ditemukan
+        <br /> <i class="fa fas fa-sad-tear" style="font-size:50px"></i>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-link" data-dismiss="modal">Batal</button>
+    </div>
+}
+else
+{
+    <script>
+        function OnSuccess(e) {
+            toggleLoading();
+            if (e.Error.length > 0) {
+                AjaxForm_showNotification(e.Error);
+            } else {
+                dataTable.draw();
+                $(ModalManage).modal('hide');
+            }
+        }
+        function OnFailure(e) {
+            toggleLoading();
+            showNotification('danger', 'Error', e.statusText)
+        }
+        function OnBegin() {
+            toggleLoading();
+        }
+
+        $(document).ready(function () {
+            $("#formManage").submit(function (event) {
+                var conf = confirm("Anda yakin?");
+                if (!conf) {
+                    return false;
+                }
+            });
+        })
+    </script>
+    using (Ajax.BeginForm("Manage", "AccessMenu"
+    , new AjaxOptions
+    {
+        HttpMethod = "POST",
+        OnSuccess = "OnSuccess",
+        OnFailure = "OnFailure",
+        OnBegin = "OnBegin"
+    }
+    , new { @class = "form-horizontal", @id = "formManage" }
+    ))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(f => f.GroupUserMenuID)
+        <div class="modal-header">
+            <h5 class="modal-title">
+                @{
+                    if (Model.GroupUserMenuID == 0)
+                    {
+                        <text>Tambah Access Menu</text>
+                    }
+                    else
+                    {
+                        <text>Ubah Access Menu</text>
+                    }
+                }
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(f => f.GroupID, new { @class = "control-label" })
+                        @Html.DropDownListFor(f => f.GroupID,
+                                new SelectList((IEnumerable<MGroupUserModel>)ViewData["GroupList"], "GroupUserID", "GroupUserName")
+                                , "", new { @class = "form-control input-border-bottom" }
+                            )
+                        <small class="form-text text-muted">@Html.ValidationMessageFor(f => f.GroupID)</small>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(f => f.MenuID, new { @class = "control-label" })
+                        @Html.DropDownListFor(f => f.MenuID,
+                                new SelectList((IEnumerable<MMenuModel>)ViewData["MenuList"], "MenuID", "MenuName")
+                                , "", new { @class = "form-control input-border-bottom" }
+                            )
+                        <small class="form-text text-muted">@Html.ValidationMessageFor(f => f.MenuID)</small>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="form-group">
+                        @Html.LabelFor(f => f.AllowCreate, new { @class = "control-label" })
+                        @Html.CheckBoxFor(f => f.AllowCreate, new { @class = "form-control" })
+                        <small class="form-text text-muted">@Html.ValidationMessageFor(f => f.AllowCreate)</small>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        @Html.LabelFor(f => f.AllowRead, new { @class = "control-label" })
+                        @Html.CheckBoxFor(f => f.AllowRead, new { @class = "form-control" })
+                        <small class="form-text text-muted">@Html.ValidationMessageFor(f => f.AllowRead)</small>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        @Html.LabelFor(f => f.AllowUpdate, new { @class = "control-label" })
+                        @Html.CheckBoxFor(f => f.AllowUpdate, new { @class = "form-control" })
+                        <small class="form-text text-muted">@Html.ValidationMessageFor(f => f.AllowUpdate)</small>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        @Html.LabelFor(f => f.AllowDelete, new { @class = "control-label" })
+                        @Html.CheckBoxFor(f => f.AllowDelete, new { @class = "form-control" })
+                        <small class="form-text text-muted">@Html.ValidationMessageFor(f => f.AllowDelete)</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-link" data-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-primary">Simpan</button>
+        </div>
+    }
+}
+

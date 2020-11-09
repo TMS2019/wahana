@@ -1,0 +1,116 @@
+﻿@model templateProject.Model.MGroupUserModel
+@using templateProject.Model
+@{
+    Layout = null;
+}
+
+@if (Model.GroupUserID == -1)
+{
+    <div class="modal-header">
+        <h5 class="modal-title">User</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body text-center" style="color: #ccc; ">
+        Data tidak ditemukan
+        <br /> <i class="fa fas fa-sad-tear" style="font-size:50px"></i>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-link" data-dismiss="modal">Batal</button>
+    </div>
+}
+else
+{
+    <script>
+        function OnSuccess(e) {
+            toggleLoading();
+            if (e.Error.length > 0) {
+                AjaxForm_showNotification(e.Error);
+            } else {
+                dataTable.ajax.reload();
+                $(ModalManage).modal('hide');
+            }
+        }
+        function OnFailure(e) {
+            toggleLoading();
+            showNotification('danger', 'Error', e.statusText)
+        }
+        function OnBegin() {
+            toggleLoading();
+        }
+        $(document).ready(function () {
+            $("#formManage").submit(function (event) {
+                var conf = confirm("Anda yakin?");
+                if (!conf) {
+                    return false;
+                }
+            });
+        })
+    </script>
+    using (Ajax.BeginForm("Manage", "GroupUser"
+    , new AjaxOptions
+    {
+        HttpMethod = "POST",
+        OnSuccess = "OnSuccess",
+        OnFailure = "OnFailure",
+        OnBegin = "OnBegin"
+    }
+    , new { @class = "form-horizontal", @id = "formManage" }
+    ))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(f => f.GroupUserID)
+        <div class="modal-header">
+            <h5 class="modal-title">
+                @{
+        if (Model.GroupUserID == 0)
+        {
+            <text>Tambah Group User</text>
+        }
+        else
+        {
+            <text>Ubah Group User</text>
+        }
+                }
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(f => f.GroupCode, new { @class = "control-label" })
+                        @Html.TextBoxFor(f => f.GroupCode, new { @class = "form-control" })
+                        <small class="form-text text-muted">@Html.ValidationMessageFor(f => f.GroupCode)</small>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(f => f.GroupUserName, new { @class = "control-label" })
+                        @Html.TextBoxFor(f => f.GroupUserName, new { @class = "form-control" })
+                        <small class="form-text text-muted">@Html.ValidationMessageFor(f => f.GroupUserName)</small>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(f => f.IsSuperAdmin, new { @class = "control-label" })
+                        @Html.CheckBoxFor(f => f.IsSuperAdmin, new { @class = "form-control" })
+                        <small class="form-text text-muted">@Html.ValidationMessageFor(f => f.IsSuperAdmin)</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-link" data-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-primary">Simpan</button>
+        </div>
+    }
+}
+
