@@ -53,27 +53,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommonModel.cs" />
-    <Compile Include="MActivityModel.cs" />
-    <Compile Include="MCargoModel.cs" />
-    <Compile Include="MDefactModel.cs" />
-    <Compile Include="MDivision.cs" />
-    <Compile Include="MDummyModel.cs" />
-    <Compile Include="MEquipmentModel.cs" />
+    <Compile Include="MBarangModel.cs" />
     <Compile Include="MIddleModel.cs" />
-    <Compile Include="MMaterialModel.cs" />
     <Compile Include="MMenuModel.cs" />
-    <Compile Include="MPlantModel.cs" />
-    <Compile Include="MPortModel.cs" />
-    <Compile Include="MProducts.cs" />
-    <Compile Include="MReadinessViewModel.cs" />
+    <Compile Include="MPerusahaanModel.cs" />
     <Compile Include="MResultModel.cs" />
-    <Compile Include="MShiftModel.cs" />
-    <Compile Include="MVesselModel.cs" />
-    <Compile Include="MVesselReleaseModel.cs" />
-    <Compile Include="MVoyageModel.cs" />
-    <Compile Include="MWageModel.cs" />
-    <Compile Include="MPlanningModel.cs" />
-    <Compile Include="MReadinnesModel.cs" />
+    <Compile Include="ReportModel.cs" />
+    <Compile Include="TransaksiModel.cs" />
     <Compile Include="UserModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResultStatusModel.cs" />

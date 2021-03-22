@@ -58,28 +58,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BarangRepository.cs" />
     <Compile Include="Common\Context.cs" />
     <Compile Include="Common\GenericRepository.cs" />
     <Compile Include="Common\UnitOfWork.cs" />
-    <Compile Include="DefactRepository.cs" />
-    <Compile Include="DivisionRepository.cs" />
-    <Compile Include="DummyRepository.cs" />
     <Compile Include="GroupUserMenuRepository.cs" />
     <Compile Include="GroupUserRepository.cs" />
     <Compile Include="Interface\IUnitOfWork.cs" />
     <Compile Include="Interface\IGenericRepository.cs" />
-    <Compile Include="MaterialRepository.cs" />
     <Compile Include="MenuRepository.cs" />
-    <Compile Include="PlanningRepository.cs" />
-    <Compile Include="PlantRepository.cs" />
-    <Compile Include="PostRepository.cs" />
+    <Compile Include="PerusahaanRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReadinessRepository.cs" />
+    <Compile Include="ReportRepository.cs" />
+    <Compile Include="TransaksiRepository.cs" />
     <Compile Include="UserRepository.cs" />
-    <Compile Include="VesselReleaseRepository.cs" />
-    <Compile Include="VesselRepository.cs" />
-    <Compile Include="VoyageRepository.cs" />
-    <Compile Include="WageRepository.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -106,7 +98,6 @@
       <Name>EMagang.Model</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
