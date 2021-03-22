@@ -86,6 +86,7 @@ namespace templateProject.Repository
         public List<MUserVM> Lookup_MUserWithGroup(
             Nullable<int> _UserID,
             string _OfficialName,
+            string _searchByNik,
             string _UserName,
             string _Nik,
             string _Email,
@@ -100,6 +101,7 @@ namespace templateProject.Repository
             {
                 new SqlParameter("UserID", _UserID == null ? (Object) DBNull.Value : _UserID),
                 new SqlParameter("OfficialName", string.IsNullOrEmpty(_OfficialName) ? (Object) DBNull.Value : _OfficialName),
+                new SqlParameter("SearchByNik", string.IsNullOrEmpty(_searchByNik) ? (Object) DBNull.Value : _searchByNik),
                 new SqlParameter("UserName", string.IsNullOrEmpty(_UserName) ? (Object) DBNull.Value : _UserName),
                 new SqlParameter("Nik", string.IsNullOrEmpty(_Nik) ? (Object) DBNull.Value : _Nik),
                 new SqlParameter("Email", string.IsNullOrEmpty(_Email) ? (Object) DBNull.Value : _Email),
@@ -113,7 +115,7 @@ namespace templateProject.Repository
             List<MUserVM> result =
                 Db.Database.SqlQuery<MUserVM>(
                                                 @"exec sp_Lookup_MUserWithGroup " +
-                                                "@UserID, @OfficialName, @UserName, @Nik, @Email, @IsDeleted" +
+                                                "@UserID,@SearchByNik, @OfficialName, @UserName, @Nik, @Email, @IsDeleted" +
                                                 ", @PageSize, @PageNumber, @OrderBy, @Sort"
                                             , sqlParams).ToList();
 
