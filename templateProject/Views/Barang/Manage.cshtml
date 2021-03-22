@@ -1,0 +1,152 @@
+﻿@model templateProject.Model.UserModel
+@using templateProject.Model
+@{
+    Layout = null;
+}
+
+@if (Model.UserID == -1)
+{
+    <div class="modal-header">
+        <h5 class="modal-title">User</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body text-center" style="color: #ccc; ">
+        Data tidak ditemukan
+        <br /> <i class="fa fas fa-sad-tear" style="font-size:50px"></i>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-link" data-dismiss="modal">Batal</button>
+    </div>
+}
+else
+{
+    <script>
+        function OnSuccess(e) {
+            toggleLoading();
+            if (e.Error.length > 0) {
+                AjaxForm_showNotification(e.Error);
+            } else {
+                dataTable.draw();
+                $(ModalManage).modal('hide');
+            }
+        }
+        function OnFailure(e) {
+            toggleLoading();
+            showNotification('danger', 'Error', e.statusText)
+        }
+        function OnBegin() {
+            toggleLoading();
+        }
+        $(document).ready(function () {
+            $("#formManage").submit(function (event) {
+                var conf = confirm("Anda yakin?");
+                if (!conf) {
+                    return false;
+                }
+            });
+        })
+    </script>
+    using (Ajax.BeginForm("Manage", "User"
+    , new AjaxOptions
+    {
+        HttpMethod = "POST",
+        OnSuccess = "OnSuccess",
+        OnFailure = "OnFailure",
+        OnBegin = "OnBegin"
+    }
+    , new { @class = "form-horizontal", @id="formManage" }
+    ))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(f => f.UserID)
+        <div class="modal-header">
+            <h5 class="modal-title">
+                @{
+                if (Model.UserID == 0)
+                {
+                    <text>Tambah User</text>
+                }
+                else
+                {
+                    <text>Ubah User</text>
+                }
+                }
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(f => f.UserName, new { @class = "control-label" })
+                        @if (Model.UserID == 0)
+                        {
+                            @Html.TextBoxFor(f => f.UserName, new { @class = "form-control" })
+                        }
+                        else
+                        {
+                            @Html.TextBoxFor(f => f.UserName, new { @class = "form-control", @readonly = "readonly" })
+                        }
+                        <small class="form-text text-muted">@Html.ValidationMessageFor(f => f.UserName)</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(f => f.Password, new { @class = "control-label" })
+                        @if (Model.UserID == 0)
+                        {
+                            @Html.PasswordFor(f => f.Password, new { @class = "form-control" })
+                        }
+                        else
+                        {
+                            @Html.PasswordFor(f => f.Password, new { @class = "form-control", @readonly = "readonly" })
+                        }
+                        <small class="form-text text-muted">@Html.ValidationMessageFor(f => f.Password)</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(f => f.GroupUserID, new { @class = "control-label" })
+                        @Html.DropDownListFor(f => f.GroupUserID,
+                                new SelectList((IEnumerable<MGroupUserModel>)ViewData["GroupList"], "GroupUserID", "GroupUserName")
+                                , "", new { @class = "form-control input-border-bottom" }
+                            )
+                        <small class="form-text text-muted">@Html.ValidationMessageFor(f => f.GroupUserID)</small>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(f => f.OfficialName, new { @class = "control-label" })
+                        @Html.TextBoxFor(f => f.OfficialName, new { @class = "form-control" })
+                        <small class="form-text text-muted">@Html.ValidationMessageFor(f => f.OfficialName)</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(f => f.Nik, new { @class = "control-label" })
+                        @Html.TextBoxFor(f => f.Nik, new { @class = "form-control" })
+                        <small class="form-text text-muted">@Html.ValidationMessageFor(f => f.Nik)</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(f => f.Email, new { @class = "control-label" })
+                        @Html.TextBoxFor(f => f.Email, new { @class = "form-control" })
+                        <small class="form-text text-muted">@Html.ValidationMessageFor(f => f.Email)</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-link" data-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-primary">Simpan</button>
+        </div>
+    }
+}
+

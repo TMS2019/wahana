@@ -1,0 +1,217 @@
+﻿@model templateProject.Model.UserModel
+@using templateProject.Model
+@using templateProject.Helper
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "User";
+}
+
+
+@section ScriptInHeader{
+    @Scripts.Render("~/Script/DataTable")
+    @Scripts.Render("~/Script/FormUnobtrusive")
+    <style>
+        #Grid td {
+            white-space: nowrap;
+        }
+    </style>
+}
+<div class="panel-header">
+    <div class="page-inner border-bottom py-5">
+        <div class="d-flex align-items-left flex-column flex-md-row">
+            <h5 class="pb-2 fw-bold"><i class="fas fa-user"></i> Master User</h5>
+            <div class="ml-md-auto py-2 py-md-0">
+                <button class="btn btn-primary btn-round btn-add" id="BtnAdd">Tambah User</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-inner mt--5">
+    <div class="row mt--2">
+        <div class="col-md-12">
+            <div class="card full-height">
+                <div class="card-body">
+                    <form id="FormSearch">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.DisplayNameFor(f => f.UserName)
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="searchByUsername" id="searchByUsername">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.DisplayNameFor(f => f.OfficialName)
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="searchByOfficialName" id="searchByOfficialName">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-1" style="padding-top: 22px">
+                                <div class="form-group pb--5">
+                                    <button type="submit" class="btn btn-icon btn-round btn-primary" id="btnSearch">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt--2">
+        <div class="col-md-12">
+            <div class="card full-height">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table id="Grid" class="table table-responsive table-striped table-head-bg-info" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>@Html.DisplayNameFor(f => f.UserName)</th>
+                                        <th>@Html.DisplayNameFor(f => f.OfficialName)</th>
+                                        <th>@Html.DisplayNameFor(f => f.Nik)</th>
+                                        <th>@Html.DisplayNameFor(f => f.Email)</th>
+                                        <th>@Html.DisplayNameFor(f => f.GroupUserName)</th>
+                                    </tr>
+                                </thead>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="ModalManage" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content" id="ModalContentManage">
+
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        var ModalManage = "#ModalManage";
+        var ModalContentManage = "#ModalContentManage";
+        var Grid = "#Grid";
+        var FormSearch = "#FormSearch";
+        var BtnAdd = "#BtnAdd";
+
+        var dataTable = $(Grid).DataTable({
+                "processing": true,
+                "serverSide": true,
+                "pageLength": '@Configs.PerPage',
+                "ajax": {
+                    "url": "@Url.Content("~/User/GridRead")",
+                    'data': function (data) {
+                        // Append to data
+                        data.searchByOfficialName = $('#searchByOfficialName').val();
+                        data.searchByUsername = $('#searchByUsername').val();
+                    }
+                },
+                "columns": [
+                    {
+                        "data": null,
+                        render: function (data, type, row) {
+                            return '<button type="button" mode="edit" class="btn btn-icon btn-link btn-edit" data-target="' + ModalManage + '"><i class="fa fa-pencil-alt"></i></button> <button type="button" class="btn btn-icon btn-link btn-danger btn-delete" mode="delete"><i class="fa fa-trash-alt"></i></button>';
+                        },
+                        "orderable": false,
+                        "width": "85px"
+                    },
+                    { "data": "UserName" },
+                    { "data": "OfficialName" },
+                    { "data": "Nik" },
+                    { "data": "Email" },
+                    { "data": "GroupUserName" },
+                ],
+                "order": [[1, "asc"]],
+                "sDom": 'lrtip',
+                "createdRow": function (row, data, index) {
+                    if ($("#AuthAllowDelete").val() == "False") {
+                        $(row).find('.btn-delete').remove();
+                    }
+
+                    if ($("#AuthAllowUpdate").val() == "False") {
+                        $(row).find('.btn-edit').remove();
+                    }
+                }
+        });
+
+        $(document).ready(function () {
+            if ($("#AuthAllowCreate").val() == "False") {
+                $(".btn-add").remove()
+            }
+
+            $(BtnAdd).on('click', function () {
+                toggleLoading();
+                $(ModalContentManage).html("");
+                $(ModalContentManage).load('@Url.Content("~/User/Manage?")' + 'id=0'
+                , function (response, status, xhr) {
+                    toggleLoading();
+                    if (status == "error") {
+                        showNotification("danger", "Failed load page", xhr.status + ' ' + xhr.statusText)
+                    } else {
+                        $(ModalManage).modal('show');
+
+                    }
+                });
+            })
+
+            $(Grid + ' tbody').on('click', 'button', function () {
+                var data = dataTable.row($(this).parents('tr')).data();
+                if ($(this).attr("mode") == "edit") {
+                    toggleLoading();
+                    $(ModalContentManage).html("");
+                    $(ModalContentManage).load('@Url.Content("~/User/Manage?")' + 'id=' + data.UserID
+                    , function (response, status, xhr) {
+                        toggleLoading();
+                        if (status == "error") {
+                            showNotification("danger", "Failed load page", xhr.status + ' ' + xhr.statusText)
+                        } else {
+                            $(ModalManage).modal('show');
+                        }
+                    });
+
+                } else {
+                    if (confirm("Are you Sure")) {
+                        toggleLoading();
+                        $.ajax({
+                            url: '@Url.Content("~/User/Delete")',
+                            type: 'POST',
+                            dataType: 'json',
+                            contentType: "application/json",
+                            data: JSON.stringify({ id: data.UserID }),
+                            error: function (er) {
+                                showNotification("danger", "Failed", er.textStatus)
+                                toggleLoading();
+                            },
+                            success: function (data) {
+                                if (data.Error.length > 0) {
+                                    AjaxForm_showNotification(data.Error);
+                                } else {
+                                    showNotification("success", "Success", "Data telah dihapus")
+                                    dataTable.draw();
+                                }
+                                toggleLoading();
+                            }
+                        });
+                    }
+                }
+            });
+
+            $(FormSearch).submit(function (event) {
+                dataTable.draw();
+                return false;
+            });
+        });
+    </script>
+}
