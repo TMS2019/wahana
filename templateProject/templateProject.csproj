@@ -156,13 +156,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Models\" />
-    <Folder Include="Views\Activity\" />
-    <Folder Include="Views\CloseVoyage\" />
-    <Folder Include="Views\Equitment\" />
-    <Folder Include="Views\Iddle\" />
-    <Folder Include="Views\Loading\" />
-    <Folder Include="Views\Shift\" />
-    <Folder Include="Views\VesselRelease\" />
+    <Folder Include="Views\Dummy\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
@@ -320,14 +314,14 @@
     <Content Include="Views\User\UserProfile.cshtml" />
     <Content Include="Views\Form\Index.cshtml" />
     <Content Include="Views\Form\Plugin.cshtml" />
-    <Content Include="Views\Planning\Index.cshtml" />
-    <Content Include="Views\Planning\Manage.cshtml" />
-    <Content Include="Views\Planning\UserProfile.cshtml" />
-    <Content Include="Views\Readiness\Index.cshtml" />
-    <Content Include="Views\Readiness\Manage.cshtml" />
-    <Content Include="Views\Readiness\UserProfile.cshtml" />
-    <Content Include="Views\Division\Index.cshtml" />
-    <Content Include="Views\Division\Manage.cshtml" />
+    <Content Include="Views\Barang\Index.cshtml" />
+    <Content Include="Views\Barang\Manage.cshtml" />
+    <Content Include="Views\Perusahaan\Index.cshtml" />
+    <Content Include="Views\Perusahaan\Manage.cshtml" />
+    <Content Include="Views\Report\Index.cshtml" />
+    <Content Include="Views\Report\Manage.cshtml" />
+    <Content Include="Views\Transaksi\Index.cshtml" />
+    <Content Include="Views\Transaksi\Manage.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

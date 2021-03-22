@@ -4,16 +4,12 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Data;
-using iTextSharp;
+ 
 using templateProject.Security;
 using templateProject.Repository.Common;
 using templateProject.Model;
 using templateProject.Helper;
-using System.IO;
-using iTextSharp.text;
-using iTextSharp.text.pdf;
-using iTextSharp.tool.xml;
-
+ 
 namespace templateProject.Controllers
 {
     public class PerusahaanController : Controller
@@ -29,13 +25,13 @@ namespace templateProject.Controllers
 
         #region View
 
-        [CustomAuthorize(Users = "accessmenu", Roles = "read")]
+        [CustomAuthorize(Users = "perush", Roles = "read")]
         public ActionResult Index()
         {
             return View();
         }
 
-        [CustomAuthorize(Users = "accessmenu", Roles = "create")]
+        [CustomAuthorize(Users = "perush", Roles = "create")]
         public ActionResult Manage(int id = 0)
         {
             MGroupUserMenuModel data = new MGroupUserMenuModel();
@@ -63,7 +59,7 @@ namespace templateProject.Controllers
             return View(data);
         }
 
-        [CustomAuthorize(Users = "accessmenu", Roles = "create")]
+        [CustomAuthorize(Users = "perush", Roles = "create")]
         [HttpPost]
         public JsonResult Manage(MGroupUserMenuModel item)
         {
@@ -102,73 +98,9 @@ namespace templateProject.Controllers
             return Json(new { Error = Error, data = item }, JsonRequestBehavior.DenyGet);
         }
 
-        [CustomAuthorize(Users = "accessmenu", Roles = "create")]
-        [HttpGet]
-        [ValidateInput(false)]
-        public ActionResult ExportPDF()
-        {
-            using (var ms = new MemoryStream())
-            {
-                using (var document = new Document(PageSize.A4, 50, 50, 15, 15))
-                {
-                    PdfWriter.GetInstance(document, ms);
-                    document.Open();
-                    document.Add(new Paragraph("HelloWorld"));
-                    document.Close();
-                }
-                Response.Clear();
-                //Response.ContentType = "application/pdf";
-                Response.ContentType = "application/octet-stream";
-                Response.AddHeader("content-disposition", "attachment;filename= Test.pdf");
-                Response.Buffer = true;
-                Response.Clear();
-                var bytes = ms.ToArray();
-                Response.OutputStream.Write(bytes, 0, bytes.Length);
-                Response.OutputStream.Flush();
-            }
-            return View();
+       
 
-        }
-
-        [HttpPost]
-        public ActionResult Save()
-        {
-
-            // write code here to save the data in database. 
-            var fName = string.Format("LaporanGL-{0}.pdf", DateTime.Now.ToString("s"));
-            using (var ms = new MemoryStream())
-            {
-                using (var document = new Document(PageSize.A4, 50, 50, 15, 15))
-                {
-                    PdfWriter.GetInstance(document, ms);
-                    document.Open();
-                    document.Add(new Paragraph("HelloWorld"));
-
-                    document.Close();
-                }
-
-                var bytes = ms.ToArray();
-                Session[fName] = bytes;
-
-            }
-
-            return Json(new { success = true, fName }, JsonRequestBehavior.AllowGet);
-            //  return Json(data, JsonRequestBehavior.AllowGet);
-            //return View();
-        }
-
-        public ActionResult DownloadInvoice(string fName)
-        {
-
-            var ms = Session[fName] as byte[];
-            if (ms == null)
-                return new EmptyResult();
-            Session[fName] = null;
-            return File(ms, "application/octet-stream", fName);
-        }
-
-
-        [CustomAuthorize(Users = "accessmenu", Roles = "delete")]
+        [CustomAuthorize(Users = "perush", Roles = "delete")]
         [HttpPost]
         public JsonResult Delete(int id = 0)
         {
@@ -208,7 +140,7 @@ namespace templateProject.Controllers
 
 
 
-        [CustomAuthorize(Users = "accessmenu", Roles = "read")]
+        [CustomAuthorize(Users = "perush", Roles = "read")]
         public JsonResult GridRead(DataTableRequest dt)
         {
             //Init Output

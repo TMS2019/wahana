@@ -4,15 +4,12 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Data;
-using iTextSharp;
+ 
 using templateProject.Security;
 using templateProject.Repository.Common;
 using templateProject.Model;
 using templateProject.Helper;
-using System.IO;
-using iTextSharp.text;
-using iTextSharp.text.pdf;
-using iTextSharp.tool.xml;
+ 
 
 namespace templateProject.Controllers
 {
